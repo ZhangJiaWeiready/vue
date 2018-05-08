@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>03_计算属性和监视</title>
+</head>
+<body>
+<!--
+1. 计算属性
+  在computed属性对象中定义计算属性的方法
+  在页面中使用{{方法名}}来显示计算的结果
+2. 监视属性:
+  通过通过vm对象的$watch()或watch配置来监视指定的属性
+  当属性变化时, 回调函数自动调用, 在函数内部进行计算
+3. 计算属性高级:
+  通过getter/setter实现对属性数据的显示和监视
+  计算属性存在缓存, 多次读取只执行一次getter计算
+-->
+<!--
+{{}}  -- 只能用来在页面中显示数据
+v-model -- 双向数据绑定 里面值修改 data值修改 --渲染到页面上的页相应的修改
+  显示数据更改，并且自动收集数据
+
+实例对象
+函数对象
+-->
+<div id="demo">
+  姓: <input type="text" placeholder="First Name" v-model='firstName'><br>
+  名: <input type="text" placeholder="Last Name" v-model='lastName'><br>
+  姓名1(单向): <input type="text" placeholder="Full Name1"  v-model='fullName1' ><br>
+  姓名2(单向): <input type="text" placeholder="Full Name2" v-model='fullName2'><br>
+  姓名3(双向): <input type="text"  placeholder="Full Name3"   v-model='fullName3'><br>
+  {{fullName1}} <br>
+  {{fullName1}} <br>
+</div>
+
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript">
+  const vm = new Vue({
+      el:'#demo',
+      data:{
+          firstName:'A',
+          lastName:'B',
+          fullName2:'A-B'
+      },
+      //计算属性
+      computed:{
+          //this全指向实例对象
+          // fullName1的值 = 回调函数的值
+          //  回调函数的值 = 当first中的值变化的适合就会调用这个回调函数
+          // fullName1() {  //get()  fullname2的值 等于 获取first和last的值
+          //     console.log('fullName1()')
+          //     return this.firstName+'-'+this.lastName
+          // },
+          // fullName1:function () {
+          //     //当firstName/lastName 的值发生改变的适合就会触发这个回调函数
+          //     // fullName1的值正好就是 回调函数返回的值
+          //     return this.firstName+'-'+this.lastName
+          // },
+          fullName1:{
+              //当firstName/lastName 的值发生改变的适合就会触发这个回调函数
+              // fullName1的值正好就是 回调函数返回的值
+              get(){
+                  return this.firstName+'-'+this.lastName
+              }
+
+          },
+          // 一改变就调用
+          fullName3:{
+              get(){
+                  return this.fullName3 = this.firstName + '-' + this.lastName
+              },
+              set(value){
+                  console.log(value)
+                  const names = value.split('-')
+                 return this.firstName = names[0],this.lastName = names[1]
+              }
+          }
+
+
+       },
+       watch:{ // 监听特定的属性
+          //监听 firstname的值 一改变就调用这个回调函数 然后就可以设置它的值了
+          firstName(value){
+              this.fullName2 = value +'-'+ this.lastName
+          }
+       }
+  })
+  //实例对象属性/方法 有$的都是实例对象的属性
+    // $watch('监听的目标元素'，callback 传入监听目标的改变的值)
+    // data 中的所有属性都定义在实例对象下面 ，但是在data中也可以找到
+  vm.$watch('lastName',function (val) {
+    console.log("vm.$watch(lastName)")
+      this.fullName2 = this.firstName + '-' + val
+  })
+
+</script>
+</body>
+</html>

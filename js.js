@@ -1,0 +1,1 @@
+const obj = 1console.log(obj)
